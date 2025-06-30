@@ -22,53 +22,40 @@ const clerkWebhooks = async (req, res) => {
         const userData = {
           _id: data.id,
           email: data.email_addresses[0].email_address,
-          name:
-            [data.first_name, data.last_name].filter(Boolean).join(" ") ||
-            data.username,
+          name: data.first_name + " " + data.last_name,
           image: data.image_url,
           resume: "",
         };
 
-        // Use findOneAndUpdate with upsert to make this operation idempotent.
-        await User.findOneAndUpdate({ _id: data.id }, userData, {
-          upsert: true,
-        });
-
-        console.log("User created or updated:", data.id);
-        res
-          .status(200)
-          .json({ success: true, message: "User created or updated" });
+        await User.create(userData);
+        console.log("User created:", userData); // Add logging
+        res.json({});
         break;
       }
 
       case "user.updated": {
         const userData = {
-          email: data.email_addresses[0].email_address,
-          name:
-            [data.first_name, data.last_name].filter(Boolean).join(" ") ||
-            data.username,
+          email: data.email_addresses[0].email_addresses,
+          name: data.first_name + " " + data.last_name,
           image: data.image_url,
         };
 
         await User.findByIdAndUpdate(data.id, userData);
-        console.log("User updated:", data.id);
-        res.status(200).json({ success: true, message: "User updated" });
+        res.json({});
         break;
       }
 
       case "user.deleted": {
         await User.findByIdAndDelete(data.id);
-        console.log("User deleted:", data.id);
-        res.status(200).json({ success: true, message: "User deleted" });
+        res.json({});
         break;
       }
       default:
-        res.status(200).json({ success: true, message: "Webhook received" });
         break;
     }
   } catch (error) {
     console.log(error.message);
-    res.status(400).json({ success: false, message: error.message });
+    res.json({ success: false });
   }
 };
 
