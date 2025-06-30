@@ -5,7 +5,7 @@ const User = require("../models/user");
 const clerkWebhooks = async (req, res) => {
   try {
     //CREATE  a svix ib=nstance with clerk webhook secret
-    const whook = new Webhook(print.env.CLERK_WEBHOOK_SECRET);
+    const whook = new Webhook(process.env.CLERK_WEBHOOK_SECRET);
 
     //verifying headers
     await whook.verify(JSON.stringify(req.body), {
@@ -21,8 +21,8 @@ const clerkWebhooks = async (req, res) => {
       case "user.created": {
         const userData = {
           _id: data.id,
-          email: data.email_addresses[0].email_addresses,
-          name: data.forst_name + " " + data.last_name,
+          email: data.email_addresses[0].email_address,
+          name: data.first_name + " " + data.last_name,
           image: data.image_url,
           resume: "",
         };
