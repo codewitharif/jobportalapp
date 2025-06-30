@@ -1,21 +1,32 @@
 const { Webhook } = require("svix");
-const User = require("../models/user");
-// api controller function to manage clerk user with database
+const User = require("../models/user"); // Make sure this matches your actual file name
 
+// api controller function to manage clerk user with database
 const clerkWebhooks = async (req, res) => {
   try {
-    //CREATE  a svix ib=nstance with clerk webhook secret
+    // CREATE a svix instance with clerk webhook secret
     const whook = new Webhook(process.env.CLERK_WEBHOOK_SECRET);
 
-    //verifying headers
-    await whook.verify(JSON.stringify(req.body), {
+    // Get the body as string for verification
+    const body = req.body;
+    const bodyString = Buffer.isBuffer(body)
+      ? body.toString()
+      : JSON.stringify(body);
+
+    // verifying headers
+    await whook.verify(bodyString, {
       "svix-id": req.headers["svix-id"],
       "svix-timestamp": req.headers["svix-timestamp"],
       "svix-signature": req.headers["svix-signature"],
     });
 
-    //getting data from request body
-    const { data, type } = req.body;
+    // Parse the body if it's a buffer
+    const payload = Buffer.isBuffer(body) ? JSON.parse(body.toString()) : body;
+
+    // getting data from request body
+    const { data, type } = payload;
+
+    console.log("Webhook received:", { type, userId: data?.id });
 
     switch (type) {
       case "user.created": {
@@ -29,33 +40,37 @@ const clerkWebhooks = async (req, res) => {
 
         await User.create(userData);
         console.log("User created:", userData); // Add logging
-        res.json({});
+        res.json({ success: true });
         break;
       }
 
       case "user.updated": {
         const userData = {
-          email: data.email_addresses[0].email_addresses,
-          name: data.first_name + " " + data.last_name,
+          email: data.email_addresses[0].email_address, // Fixed: removed extra 's'
+          name: data.first_name + " " + data.last_name, // Fixed: 'forst_name' to 'first_name'
           image: data.image_url,
         };
 
         await User.findByIdAndUpdate(data.id, userData);
-        res.json({});
+        console.log("User updated:", userData); // Add logging
+        res.json({ success: true });
         break;
       }
 
       case "user.deleted": {
         await User.findByIdAndDelete(data.id);
-        res.json({});
+        console.log("User deleted:", data.id); // Add logging
+        res.json({ success: true });
         break;
       }
       default:
+        console.log("Unhandled webhook type:", type);
+        res.json({ success: true });
         break;
     }
   } catch (error) {
-    console.log(error.message);
-    res.json({ success: false });
+    console.log("Webhook error:", error.message);
+    res.status(400).json({ success: false, error: error.message });
   }
 };
 
