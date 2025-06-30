@@ -12,6 +12,8 @@ const app = express();
 
 // Middleware
 app.use(cors());
+// Important: Raw body parsing for webhooks BEFORE express.json()
+app.use("/webhooks", express.raw({ type: "application/json" }));
 app.use(express.json());
 
 // Routes
@@ -19,7 +21,7 @@ app.get("/", (req, res) => {
   res.send("Job Portal API Running 🚀");
 });
 
-app.post("/webhooks", clerkWebhooks)
+app.post("/webhooks", clerkWebhooks);
 
 // Start server
 const PORT = process.env.PORT || 5000;
