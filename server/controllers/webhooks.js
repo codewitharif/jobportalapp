@@ -27,34 +27,44 @@ const clerkWebhooks = async (req, res) => {
           resume: "",
         };
 
-        await User.create(userData);
-        res.json({});
+        // Use findOneAndUpdate with upsert to make this operation idempotent.
+        await User.findOneAndUpdate({ _id: data.id }, userData, {
+          upsert: true,
+        });
+
+        console.log("User created or updated:", data.id);
+        res
+          .status(200)
+          .json({ success: true, message: "User created or updated" });
         break;
       }
 
       case "user.updated": {
         const userData = {
-          email: data.email_addresses[0].email_addresses,
+          email: data.email_addresses[0].email_address,
           name: data.first_name + " " + data.last_name,
           image: data.image_url,
         };
 
         await User.findByIdAndUpdate(data.id, userData);
-        res.json({});
+        console.log("User updated:", data.id);
+        res.status(200).json({ success: true, message: "User updated" });
         break;
       }
 
       case "user.deleted": {
         await User.findByIdAndDelete(data.id);
-        res.json({});
+        console.log("User deleted:", data.id);
+        res.status(200).json({ success: true, message: "User deleted" });
         break;
       }
       default:
+        res.status(200).json({ success: true, message: "Webhook received" });
         break;
     }
   } catch (error) {
     console.log(error.message);
-    res.json({ success: false });
+    res.status(400).json({ success: false, message: error.message });
   }
 };
 
