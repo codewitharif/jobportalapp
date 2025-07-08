@@ -34,7 +34,7 @@ const App = () => {
         <Route index path="/" element={<Home />} />
         <Route path="/apply-job/:id" element={<ApplyJob />} />
         <Route
-          path="/application"
+          path="/applications"
           element={userData ? <Application /> : <Navigate to="/" replace />}
         />
         <Route path="/apply-jobs" element={<JobListing />} />
