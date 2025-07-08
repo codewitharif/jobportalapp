@@ -52,7 +52,7 @@ const App = () => {
         </Route>
       </Routes>
 
-      <Footer />
+      {!isDashboardRoute && <Footer />}
     </div>
   );
 };
