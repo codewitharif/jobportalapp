@@ -4,14 +4,21 @@ const cors = require("cors");
 const dotenv = require("dotenv");
 const connectDB = require("./config/db");
 const { clerkWebhooks } = require("./controllers/webhooks");
+const companyRoutes = require("./routes/companyRoutes");
+const userRoutes = require("./routes/userRoutes");
+const jobRoutes = require("./routes/jobRoutes");
+const connectCloudinary = require("./config/cloudinary");
+const { clerkMiddleware } = require("@clerk/express");
 
 dotenv.config();
 connectDB();
+connectCloudinary();
 
 const app = express();
 
 // Middleware
 app.use(cors());
+app.use(clerkMiddleware());
 // Important: Raw body parsing for webhooks BEFORE express.json()
 app.use("/webhooks", express.raw({ type: "application/json" }));
 app.use(express.json());
@@ -22,6 +29,9 @@ app.get("/", (req, res) => {
 });
 
 app.post("/webhooks", clerkWebhooks);
+app.use("/api/company", companyRoutes);
+app.use("/api/jobs", jobRoutes);
+app.use("/api/users", userRoutes);
 
 // Start server
 const PORT = process.env.PORT || 5000;

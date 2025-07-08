@@ -1,10 +1,65 @@
-import React from "react";
-import { manageJobsData } from "../src/assets/assets";
+import React, { useEffect, useState, useContext } from "react";
 import moment from "moment";
 import { useNavigate } from "react-router-dom";
+import { AppContext } from "../context/AppContext";
+import axios from "axios";
+import Loading from "../components/Loading";
 
 const ManageJobs = () => {
   const navigate = useNavigate();
+  const { backendUrl, companyToken } = useContext(AppContext);
+  const [jobs, setJobs] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  const fetchJobs = async () => {
+    try {
+      const { data } = await axios.get(backendUrl + "/api/company/list-jobs", {
+        headers: { token: companyToken },
+      });
+      if (data.success) {
+        setJobs(data.jobData);
+        setLoading(false);
+      }
+    } catch (error) {
+      console.error("Error fetching jobs:", error);
+    }
+  };
+
+  // Toggle visibility
+  const toggleVisibility = async (id) => {
+    try {
+      const { data } = await axios.post(
+        backendUrl + "/api/company/change-visiblity",
+        { id },
+        {
+          headers: { token: companyToken },
+        }
+      );
+
+      if (data.success) {
+        // Update local state after toggling
+        setJobs((prevJobs) =>
+          prevJobs.map((job) =>
+            job._id === id ? { ...job, visible: data.job.visible } : job
+          )
+        );
+      }
+    } catch (error) {
+      console.error("Error toggling visibility:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchJobs();
+  }, []);
+
+  if (loading) return <Loading />;
+  if (jobs.length === 0)
+    return (
+      <div className="flex items-start justify-center h-[70vh]">
+        <p className="text-xl sm:text-2xl">No Jobs Available or Posted</p>
+      </div>
+    );
 
   return (
     <div className="p-6">
@@ -31,19 +86,20 @@ const ManageJobs = () => {
             </tr>
           </thead>
           <tbody>
-            {manageJobsData.map((job, index) => (
-              <tr key={index} className="border-t hover:bg-gray-50">
+            {jobs.map((job, index) => (
+              <tr key={job._id} className="border-t hover:bg-gray-50">
                 <td className="px-4 py-3">{index + 1}</td>
                 <td className="px-4 py-3">{job.title}</td>
                 <td className="px-4 py-3 max-sm:hidden">
-                  {moment(job.date).format("ll")}
+                  {moment(Number(job.date)).format("ll")}
                 </td>
                 <td className="px-4 py-3 max-sm:hidden">{job.location}</td>
                 <td className="px-4 py-3">{job.applicants}</td>
                 <td className="px-4 py-3">
                   <input
                     type="checkbox"
-                    defaultChecked={job.visible}
+                    checked={job.visible}
+                    onChange={() => toggleVisibility(job._id)}
                     className="w-4 h-4"
                   />
                 </td>

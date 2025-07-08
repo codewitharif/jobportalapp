@@ -1,7 +1,11 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import Quill from "quill";
 import "quill/dist/quill.snow.css";
 import { assets, JobCategories, JobLocations } from "../src/assets/assets";
+import { AppContext } from "../context/AppContext";
+import axios from "axios";
+import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 const AddJob = () => {
   const [title, setTitle] = useState("");
@@ -11,7 +15,8 @@ const AddJob = () => {
   const [salary, setSalary] = useState("");
   const [quill, setQuill] = useState(null);
   const editorRef = useRef(null);
-
+  const { backendUrl, companyToken } = useContext(AppContext);
+  //
   useEffect(() => {
     if (editorRef.current && !quill) {
       const quillInstance = new Quill(editorRef.current, {
@@ -22,20 +27,39 @@ const AddJob = () => {
     }
   }, [quill]);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const description = quill?.root.innerHTML;
+    try {
+      console.log("i got my company token ", companyToken);
+      const description = quill?.root.innerHTML;
+      const jobData = {
+        title,
+        location,
+        category,
+        level,
+        salary,
+        description,
+      };
 
-    const jobData = {
-      title,
-      location,
-      category,
-      level,
-      salary,
-      description,
-    };
+      const { data } = await axios.post(
+        backendUrl + "/api/company/post-job",
+        jobData,
+        {
+          headers: { token: companyToken },
+        }
+      );
 
-    console.log("Submitting Job:", jobData);
+      if (data.success) {
+        toast.success("Job posted successfully!");
+        setTitle("");
+        setSalary(0);
+        // editorRef.current.root.innerHTML = "";
+        quill.root.innerHTML = "";
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error(error.message);
+    }
 
     // You can send `jobData` to your backend API here.
   };

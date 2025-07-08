@@ -63,15 +63,38 @@ const Hero = () => {
         </div>
       </div>
 
-      <div className=" border border-gray-300 shadow-md mx-2 mt-5 p-6 rounded-md flex">
-        <div className="flex justify-center gap-10 lg:gap-16 flex-wrap">
-          <p className="font-medium">Trusted Partner</p>
-          <img className="h-6" src={assets.microsoft_logo} alt="" />
-          <img className="h-6" src={assets.walmart_logo} alt="" />
-          <img className="h-6" src={assets.accenture_logo} alt="" />
-          <img className="h-6" src={assets.samsung_logo} alt="" />
-          <img className="h-6" src={assets.amazon_logo} alt="" />
-          <img className="h-6" src={assets.adobe_logo} alt="" />
+      <div className="border border-gray-200 shadow-sm rounded-lg mx-auto mt-8 p-6 max-w-7xl">
+        <div className="flex flex-wrap justify-center items-center gap-8 md:gap-12 lg:gap-16">
+          <img
+            className="h-6 opacity-80 hover:opacity-100 transition-opacity"
+            src={assets.microsoft_logo}
+            alt="Microsoft"
+          />
+          <img
+            className="h-6 opacity-80 hover:opacity-100 transition-opacity"
+            src={assets.walmart_logo}
+            alt="Walmart"
+          />
+          <img
+            className="h-6 opacity-80 hover:opacity-100 transition-opacity"
+            src={assets.accenture_logo}
+            alt="Accenture"
+          />
+          <img
+            className="h-6 opacity-80 hover:opacity-100 transition-opacity"
+            src={assets.samsung_logo}
+            alt="Samsung"
+          />
+          <img
+            className="h-8 opacity-80 hover:opacity-100 transition-opacity"
+            src={assets.amazon_logo}
+            alt="Amazon"
+          />
+          <img
+            className="h-7 opacity-80 hover:opacity-100 transition-opacity"
+            src={assets.adobe_logo}
+            alt="Adobe"
+          />
         </div>
       </div>
     </div>

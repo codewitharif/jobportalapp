@@ -2,6 +2,9 @@ import React, { useContext, useEffect, useState } from "react";
 import { assets } from "../src/assets/assets";
 import { AppContext } from "../context/AppContext";
 import { RxCross2 } from "react-icons/rx";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const RecruiterLogin = () => {
   const [state, setState] = useState("Login");
@@ -10,24 +13,72 @@ const RecruiterLogin = () => {
   const [email, setEmail] = useState("");
   const [image, setImage] = useState(null);
   const [isTextDataSubmitted, setIsTextDataSubmitted] = useState(false);
+  const navigate = useNavigate();
 
-  const { setShowRecruiterLogin } = useContext(AppContext);
+  const {
+    setShowRecruiterLogin,
+    backendUrl,
+    companyToken,
+    setCompanyToken,
+    companyData,
+    setCompanyData,
+  } = useContext(AppContext);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (state === "Signup") {
       if (!isTextDataSubmitted) {
-        setIsTextDataSubmitted(true);
+        return setIsTextDataSubmitted(true);
       } else {
-        // ✅ Final submission logic here (send to backend etc.)
-        alert("Signup completed!");
+        const formData = new FormData();
+        formData.append("name", name);
+        formData.append("password", password);
+        formData.append("email", email);
+        formData.append("image", image);
+
+        const { data } = await axios.post(
+          backendUrl + "/api/company/register",
+          formData
+        );
+        if (data.success) {
+          console.log(data);
+          setCompanyData(data.company);
+          setCompanyToken(data.token);
+          setShowRecruiterLogin(false);
+          localStorage.setItem("companyToken", data.token);
+          toast.success(data.message);
+          navigate("/dashboard");
+        } else {
+          // toast.error(data.message);
+        }
       }
     }
 
     if (state === "Login") {
       // ✅ Login logic here
-      alert("Logged in!");
+      try {
+        var { data } = await axios.post(backendUrl + "/api/company/login", {
+          email,
+          password,
+        });
+        if (data.success) {
+          console.log(data);
+          setCompanyData(data.company);
+          setCompanyToken(data.token);
+          setShowRecruiterLogin(false);
+          localStorage.setItem("companyToken", data.token);
+
+          navigate("/dashboard");
+
+          toast.success(data.message);
+        } else {
+          console.log(data.message);
+          navigate("/");
+        }
+      } catch (error) {
+        // toast.error(error.message);
+      }
     }
   };
 

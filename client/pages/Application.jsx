@@ -1,20 +1,56 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { assets, jobsApplied } from "../src/assets/assets";
 import moment from "moment";
+import { AppContext } from "../context/AppContext";
+import { useAuth, useUser } from "@clerk/clerk-react";
+import axios from "axios";
+import { toast } from "react-toastify";
 
 const Application = () => {
   const [isEdit, setEdit] = useState(false);
   const [resume, setResume] = useState(null);
+
+  const { backendUrl, userData, userApplication, fetchUserData } =
+    useContext(AppContext);
+  const { user } = useUser();
+  const { getToken } = useAuth();
+
+  const UpdateResume = async () => {
+    try {
+      const formData = new FormData();
+      formData.append("resume", resume);
+
+      const token = await getToken();
+      const { data } = await axios.post(
+        backendUrl + `/api/users/update-resume`,
+        formData,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      if (data.success) {
+        toast.success("Resume added successfully");
+        await fetchUserData();
+      }
+    } catch (error) {
+      console.log(error);
+    }
+    setEdit(false);
+    setResume(null);
+  };
+  console.log(userData);
+
   return (
     <>
       <div className="container px-4 min-h-[65vh] 2xl:px-20 mx-auto my-10">
         <h2 className="text-xl font-semibold">Your Resume</h2>
         <div className="flex gap-2 mb-6 mt-3">
-          {isEdit ? (
+          {isEdit || (userData && userData.resume === "") ? (
             <>
               <label className="flex items-center" htmlFor="resumeUpload">
                 <p className=" bg-blue-100 text-black px-4 py-2 rounded-lg mr-2">
-                  Select Resume
+                  {resume ? resume.name : "Select Resume"}
                 </p>
                 <input
                   type="file"
@@ -26,7 +62,7 @@ const Application = () => {
                 <img src={assets.profile_upload_icon} alt="" />
               </label>
               <button
-                onClick={() => setEdit(false)}
+                onClick={UpdateResume}
                 className=" bg-green-100 border border-green-400 rounded-lg px-4 py-2"
               >
                 Save
@@ -37,7 +73,8 @@ const Application = () => {
               {" "}
               <a
                 className=" bg-blue-100 text-black border-gray-300 rounded-lg px-4 py-2"
-                href=""
+                href={userData.resume}
+                target="_blank"
               >
                 Resume
               </a>{" "}
@@ -66,15 +103,15 @@ const Application = () => {
             </tr>
           </thead>
           <tbody>
-            {jobsApplied.map((job, index) =>
+            {userApplication.map((job, index) =>
               true ? (
                 <tr>
                   <td className="py-3 px-4 flex items-center gap-2 border-b">
-                    <img className="w-8 h-8" src={job.logo} alt="" />
-                    {job.company}
+                    <img className="w-8 h-8" src={job.companyId.image} alt="" />
+                    {job.companyId.name}
                   </td>
-                  <td>{job.title}</td>
-                  <td className="max-sm:hidden">{job.location}</td>
+                  <td>{job.jobId.title}</td>
+                  <td className="max-sm:hidden">{job.jobId.location}</td>
                   <td className="max-sm:hidden">
                     {moment(job.date).format("ll")}
                   </td>
