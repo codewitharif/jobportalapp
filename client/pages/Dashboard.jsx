@@ -16,7 +16,7 @@ const Dashboard = () => {
   return (
     <div className="min-h-screen">
       {/* navbar for Recruiter */}
-      <div className="shadow py-4">
+      <div className="shadow py-4 w-full">
         <div className="px-5 flex justify-between items-center">
           <img
             onClick={() => navigate("/")}
