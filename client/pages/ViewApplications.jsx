@@ -65,7 +65,9 @@ const ViewApplications = () => {
     );
   return (
     <div className="p-6">
-      <h2 className="text-2xl font-semibold mb-6">Job Applications</h2>
+      <h2 className="text-2xl font-semibold mb-6 sm:text-sm font-normal">
+        Job Applications
+      </h2>
       <div className="overflow-x bg-white shadow-md rounded-lg">
         <table className="w-full text-left text-sm border-collapse">
           <thead className="bg-gray-100 text-gray-700 uppercase text-xs">
@@ -74,7 +76,7 @@ const ViewApplications = () => {
               <th className="px-4 py-3">Username</th>
               <th className="px-4 py-3">Job Title</th>
               <th className="px-4 py-3 max-sm:hidden">Location</th>
-              <th className="px-4 py-3">Resume</th>
+              <th className="px-4 py-3 max-sm:hidden">Resume</th>
               <th className="px-4 py-3">Action</th>
             </tr>
           </thead>
@@ -96,7 +98,7 @@ const ViewApplications = () => {
                   <td className="px-4 py- max-sm:hidden">
                     {applicant.jobId.location}
                   </td>
-                  <td className="px-4 py-3">
+                  <td className="px-4 py-3 max-sm:hidden">
                     <a
                       href={applicant.userId.resume || "#"}
                       target="_blank"
