@@ -64,15 +64,9 @@ const ManageJobs = () => {
   return (
     <div className="p-6">
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-semibold  sm:text-balance ">
+        <h2 className="text-2xl font-semibold  sm:text-sm font-normal ">
           Manage Jobs
         </h2>
-        <button
-          onClick={() => navigate("/dashboard/add-job")}
-          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition sm:px-2 py-2"
-        >
-          +
-        </button>
       </div>
 
       <div className="overflow-x-auto bg-white shadow-md rounded-lg">
