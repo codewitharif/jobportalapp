@@ -16,7 +16,7 @@ const Dashboard = () => {
   return (
     <div className="min-h-screen">
       {/* navbar for Recruiter */}
-      <div className="shadow py-4 w-full">
+      <div className="shadow py-4 ">
         <div className="px-5 flex justify-between items-center">
           <img
             onClick={() => navigate("/")}
@@ -93,6 +93,9 @@ const Dashboard = () => {
           <Outlet />
         </div>
       </div>
+      <footer className="border-t border-white mt-6 py-4 text-center text-sm text-gray-500">
+        © {new Date().getFullYear()} JobHunt. All rights reserved.
+      </footer>
     </div>
   );
 };
