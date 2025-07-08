@@ -86,7 +86,7 @@ const loginCompany = async (req, res) => {
     });
   } catch (error) {
     console.error("Login error:", error);
-    res.status(500).json({ message: "Server error" });
+    res.status(500).json({ message: error.message });
   }
 };
 
@@ -167,7 +167,7 @@ const getCompanyPostedJobs = async (req, res) => {
 };
 
 //change job application status
-const changeJobApplicationsStatus = async (req,res) => {
+const changeJobApplicationsStatus = async (req, res) => {
   try {
     const { id, status } = req.body;
     //find job application and update status
