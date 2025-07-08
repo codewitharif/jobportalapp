@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
 import { assets } from "../src/assets/assets";
 import { Link, useNavigate } from "react-router-dom";
-import logo2 from "../src/assets/logo2.png";
+import logo3 from "../src/assets/logo3.jpeg";
 import {
   SignedIn,
   SignedOut,
@@ -20,7 +20,12 @@ const Navbar = () => {
   return (
     <div className="shadow py-4">
       <div className="container px-4 2xl:px-20 mx-auto flex justify-between items-center">
-        <img src={assets.logo} alt="Logo" />
+        {/* <img src={logo3} alt="Logo" /> */}
+        <img
+          src={logo3}
+          alt="Logo"
+          className="max-w-[140px] w-full h-auto object-contain"
+        />
 
         {user ? (
           <div className="flex items-center gap-3">
