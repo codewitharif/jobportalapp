@@ -93,7 +93,7 @@ const Dashboard = () => {
           <Outlet />
         </div>
       </div>
-      <footer className="border-t border-white mt-6 py-4 text-center text-sm text-gray-500">
+      <footer className="border-t border-gray-300 mt-6 py-4 text-center text-sm text-gray-500 shadow py-4">
         © {new Date().getFullYear()} JobHunt. All rights reserved.
       </footer>
     </div>
